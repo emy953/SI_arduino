@@ -65,29 +65,31 @@ void nr_oameni(){
    state1=digitalRead(sensorPin1);
   state2=digitalRead(sensorPin2);
   
-  digitalWrite(ledPin1,state1);
-  digitalWrite(ledPin2,state2);
+  //digitalWrite(ledPin1,state1);
+  //digitalWrite(ledPin2,state2);
 
   if(state1!=lastst1 && state1==HIGH){
-      state1count++;    
-      digitalWrite(ledPin1,state1);    
+    	state1count++;    
+    	//digitalWrite(ledPin1,state1);    
   }
   if(state2!=lastst2 && state2==HIGH){
-      state2count++;
-      digitalWrite(ledPin2,state2);   
+    	state2count++;
+    	//digitalWrite(ledPin2,state2);   
   }
   
   if(state1count==(state2count+1)){
-    ok=1;
+  	ok=1;
    // Serial.print("OK pentru + este:");
     Serial.println(ok);
   }
+  else state1count=state2count;
   
   if(state2count==(state1count+1)){
-    ok=1;
+   	ok=1;
   //  Serial.print("OK pentru - este:");
     Serial.println(ok);
   }
+  else state1count=state2count;
   
   if(ok==1 && lastst2==LOW &&state2==HIGH && state1==HIGH){
     counter++;
@@ -97,8 +99,10 @@ void nr_oameni(){
     Serial.println(counter);
   }
   else if(ok==1 && lastst1==LOW && state2==HIGH && state1==HIGH){
-    counter--;
-    Serial.print("////////Counter oameni:");
+    if(counter>0){counter--; 
+                  Serial.print("////////Counter oameni:");}
+    else Serial.println("Bus empty");
+    
     Serial.println(counter);
     
     ok=0;
