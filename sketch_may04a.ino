@@ -33,8 +33,7 @@ Servo MG995_Servo;  // Define an instance of of Servo with the name of "MG995_Se
 #define ATMOCO2 397.13
 int sensorIn = A0;
 
-const byte ledPin1 = 13;
-const byte ledPin2 = 12;
+
 const byte sensorPin1 = 3;
 const byte sensorPin2 = 2;
 
@@ -49,6 +48,8 @@ int ok=0;
 
 
 void setup(){
+  pinMode(11,OUTPUT);
+  digitalWrite(11,HIGH);
   pinMode(ledPin1, OUTPUT);
   pinMode(ledPin2, OUTPUT);
   pinMode(sensorPin1, INPUT);
@@ -123,15 +124,17 @@ void nr_oameni(){
 
   float h;
   float t;
+  float com;
 
 void DHT_Servo(){
   h = dht.readHumidity();
   t = dht.readTemperature();
+  com = (t * 1.8 + 32) - (0.55 - 0.0055 * h) * ((t * 1.8 + 32) - 58);
   if (isnan(h) || isnan(t)) {
     Serial.println(F("Failed to read from DHT sensor!"));
     return;
   }
-  float hic ;//= dht.computeHeatIndex(t, h, false);
+  float hic= dht.computeHeatIndex(t, h, false);
   if(hasBeenPrinted==false)
   {
     Serial.print(F("  Humidity: "));
@@ -145,7 +148,9 @@ void DHT_Servo(){
   }
   if(t>24)
   {
-    MG995_Servo.write(200);
+    MG995_Servo.write(180);
+  } else {
+    MG995_Servo.write(0);
   }
   hasBeenPrinted = true;
 }
@@ -286,12 +291,13 @@ void loop(){
   unsigned long m=millis();
   m=m/10000*10000;
   Serial.println(m);
-  if(m%20000==0&&m>=20000){
+  if(m%60000==0&&m>=60000){
   getGpsData();
   postLL("latitudine",latitude);
   postLL("longitudine",longitude);
   postLL("humidity",h);
   postLL("temperature",t);
+  postLL("comfort",com);
   postLL("ppm",ppm);
   postNum("people",counter);
   }
