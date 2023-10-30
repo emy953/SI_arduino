@@ -48,10 +48,8 @@ int ok=0;
 
 
 void setup(){
-  pinMode(11,OUTPUT);
-  digitalWrite(11,HIGH);
-  pinMode(ledPin1, OUTPUT);
-  pinMode(ledPin2, OUTPUT);
+  pinMode(12,OUTPUT);
+  digitalWrite(12,HIGH);
   pinMode(sensorPin1, INPUT);
   pinMode(sensorPin2, INPUT);
   Serial.begin(9600);
@@ -66,46 +64,32 @@ void nr_oameni(){
    state1=digitalRead(sensorPin1);
   state2=digitalRead(sensorPin2);
   
-  //digitalWrite(ledPin1,state1);
-  //digitalWrite(ledPin2,state2);
 
   if(state1!=lastst1 && state1==HIGH){
-    	state1count++;    
-    	//digitalWrite(ledPin1,state1);    
+      state1count++;    
   }
   if(state2!=lastst2 && state2==HIGH){
-    	state2count++;
-    	//digitalWrite(ledPin2,state2);   
+      state2count++;
   }
   
   if(state1count==(state2count+1)){
-  	ok=1;
-   // Serial.print("OK pentru + este:");
-    Serial.println(ok);
+    ok=1;
   }
   else state1count=state2count;
   
   if(state2count==(state1count+1)){
-   	ok=1;
-  //  Serial.print("OK pentru - este:");
-    Serial.println(ok);
+    ok=1;
   }
   else state1count=state2count;
-  
   if(ok==1 && lastst2==LOW &&state2==HIGH && state1==HIGH){
     counter++;
     ok=0;
     delay(300);
-    Serial.print("////////Counter oameni:");
     Serial.println(counter);
   }
   else if(ok==1 && lastst1==LOW && state2==HIGH && state1==HIGH){
-    if(counter>0){counter--; 
-                  Serial.print("////////Counter oameni:");}
-    else Serial.println("Bus empty");
-    
+    if(counter>0)counter--; 
     Serial.println(counter);
-    
     ok=0;
     delay(300);
   }
@@ -113,11 +97,10 @@ void nr_oameni(){
     Serial.println(state1count);
   Serial.print("Counter senzor 2:");
     Serial.println(state2count);
-  Serial.print("////////Counter oameni:");
+  Serial.print("Counter oameni:");
     Serial.println(counter);
   lastst1=state1;
   lastst2=state2;
-  Serial.println("////////////////////////////////");
 }
 
 
@@ -135,18 +118,14 @@ void DHT_Servo(){
     return;
   }
   float hic= dht.computeHeatIndex(t, h, false);
-  if(hasBeenPrinted==false)
+ // if(hasBeenPrinted==false)
   {
-    Serial.print(F("  Humidity: "));
+    Serial.print(F("  Umiditate: "));
     Serial.print(h);
-    Serial.print(F("%\n  Temperature: "));
+    Serial.println(F("%\n  Temperatura: "));
     Serial.print(t);
-    Serial.print(F("°C "));
-    Serial.print(F("\n  Heat index: "));
-    Serial.print(hic);
-    Serial.print(F("°C "));
   }
-  if(t>24)
+  if(t>27)
   {
     MG995_Servo.write(180);
   } else {
@@ -165,10 +144,6 @@ void MQ(){
 
 void sendsim808(const char* msg, int waitMs = 500) {
   sim808.println(msg);
- // while(sim808.available()) {
-    //Serial.print((char)sim808.read());
-   // delay(10);
-//  }
   delay(waitMs);
 }
 
@@ -286,12 +261,9 @@ void loop(){
   nr_oameni();
   DHT_Servo();
   MQ();
-  //postNum("people",counter);
-  //Serial.println(millis());
   unsigned long m=millis();
   m=m/10000*10000;
-  Serial.println(m);
-  if(m%60000==0&&m>=60000){
+  /*if(m%60000==0&&m>=60000){
   getGpsData();
   postLL("latitudine",latitude);
   postLL("longitudine",longitude);
@@ -300,5 +272,5 @@ void loop(){
   postLL("comfort",com);
   postLL("ppm",ppm);
   postNum("people",counter);
-  }
+  }*/
 }
